@@ -1,0 +1,532 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Email Preview Lab v1.4 UI Upgrade</title>
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+             margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #1e293b
+         }
+ 
+         header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+             color: #fff;
+            padding: 16px 20px;
+             display: flex;
+            gap: 12px;
+             align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2)
+         }
+ 
+         header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            margin-right: auto
+         }
+ 
+         button,
+         select,
+        input[type="text"],
+        input[type="file"] {
+            padding: 10px 14px;
+             border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease
+         }
+ 
+         button {
+             cursor: pointer;
+            background: #fff;
+            color: #1e293b;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        button:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15)
+        }
+
+        button:active {
+            transform: translateY(0)
+        }
+
+        select {
+            cursor: pointer;
+            background: #fff;
+            color: #1e293b;
+        }
+
+        select:hover,
+        select:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1)
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            background: #fff;
+        }
+
+        input[type="text"]:focus,
+        input[type="file"]:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1)
+         }
+ 
+         .main {
+             display: grid;
+            grid-template-columns: 340px 1fr;
+            height: calc(100vh - 70px);
+            gap: 0
+        }
+
+        .side {
+            background: #fff;
+            padding: 16px;
+            overflow: auto;
+            border-right: 1px solid #e2e8f0;
+            box-shadow: inset -1px 0 4px rgba(0, 0, 0, 0.02)
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            border-radius: 6px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 11px;
+            background: #f8fafc;
+            color: #334155;
+            resize: vertical;
+            transition: all 0.2s ease;
+            line-height: 1.4
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08)
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f8fafc;
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease
+        }
+
+        input[type="file"]:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .preview {
+            padding: 16px;
+            overflow: auto;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.01) 0%, rgba(30, 41, 59, 0.01) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview > .card {
+            width: 100%;
+            margin: 0;
+        }
+
+        .device {
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 6px solid #1e293b;
+        }
+
+        iframe {
+            width: 100%;
+            height: 650px;
+            border: 0;
+        }
+ 
+         .hidden {
+             display: none
+         }
+ 
+         .compare-area {
+            margin-top: 20px;
+            width: 100%
+         }
+ 
+         .diff-container {
+             display: grid;
+             grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px
+         }
+ 
+         .diff-box {
+            background: #1e293b;
+            color: #e2e8f0;
+            height: 550px;
+             overflow: auto;
+            padding: 12px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+             text-align: left;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            line-height: 1.5
+         }
+ 
+         .diff-header {
+             position: sticky;
+             top: 0;
+            background: #0f172a;
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 1px solid #334155;
+            color: #60a5fa
+         }
+ 
+         .line {
+             display: block;
+            white-space: pre-wrap;
+            word-break: break-all
+         }
+ 
+         .remove {
+            background: rgba(220, 38, 38, 0.2);
+            color: #fca5a5
+         }
+ 
+         .add {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac
+         }
+ 
+         .badge {
+             display: inline-block;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600
+        }
+
+        #searchResult {
+            margin-top: 8px;
+            padding: 8px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 13px
+        }
+
+        #report {
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #6366f1;
+            font-size: 13px;
+            color: #334155;
+            line-height: 1.6
+        }
+
+        @media (max-width: 1024px) {
+            .main {
+                grid-template-columns: 1fr
+            }
+
+            .side {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0
+            }
+
+            .device {
+                max-width: 100%;
+            }
+
+            .diff-container {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media (max-width: 768px) {
+            .device {
+                border-width: 4px;
+            }
+
+            .preview {
+                padding: 12px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8
+         }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h2>📧 Email Preview Lab v1.4</h2>
+        <button onclick="preview()">👁 Preview</button>
+        <button onclick="qa()">🧪 QA</button>
+        <button onclick="responsys()">⚙ Responsys</button>
+        <button onclick="compareVersion()">🔀 Compare</button>
+        <button onclick="exportReport()">📤 Export</button>
+    </header>
+
+    <div class="main">
+
+        <div class="side">
+
+            <div class="card">
+                <h3>📄 Current HTML</h3>
+                <input type="file" id="file">
+                <textarea id="html"></textarea>
+            </div>
+
+            <div class="card">
+                <h3>🔄 Compare Version</h3>
+                <textarea id="htmlB" placeholder="Paste second HTML"></textarea>
+            </div>
+
+            <div class="card">
+                <h3>🔎 Search</h3>
+                <input id="search" oninput="searchHTML()" placeholder="table/img/media">
+                <div id="searchResult"></div>
+            </div>
+
+            <div class="card">
+                <h3>📊 Report</h3>
+                <div id="report">No report</div>
+            </div>
+
+        </div>
+
+        <div class="preview">
+
+            <div class="card">
+                <select onchange="resizePreview(this.value)">
+                    <option value="600">Desktop 600</option>
+                    <option value="393">iPhone 15</option>
+                    <option value="375">iPhone SE</option>
+                    <option value="360">Gmail Mobile</option>
+                </select>
+            </div>
+
+            <div id="device" class="device" style="width:600px">
+                <iframe id="frame"></iframe>
+            </div>
+
+
+            <div id="compareArea" class="card hidden compare-area">
+
+                <h3>🔀 HTML Compare <button onclick="closeCompare()">Close</button></h3>
+
+                <div class="diff-container">
+
+                    <div id="oldDiff" class="diff-box">
+                        <div class="diff-header">OLD HTML</div>
+                    </div>
+
+                    <div id="newDiff" class="diff-box">
+                        <div class="diff-header">NEW HTML</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+    <script>
+
+        let reportData = [];
+        let lock = false;
+
+        function preview() {
+            frame.srcdoc = html.value;
+        }
+
+        function resizePreview(w) {
+            device.style.width = w + "px";
+        }
+
+        function searchHTML() {
+            let k = search.value;
+            let c = k ? (html.value.match(new RegExp(k, "gi")) || []).length : 0;
+            searchResult.innerHTML = "Found: " + c;
+        }
+
+        function qa() {
+            let h = html.value;
+            reportData = [
+                "🧪 QA REPORT",
+                "Tables: " + ((h.match(/<table/gi) || []).length),
+                "Images: " + ((h.match(/<img/gi) || []).length),
+                "Size: " + (new Blob([h]).size / 1024).toFixed(1) + " KB"
+            ];
+            report.innerHTML = reportData.join("<br>");
+        }
+
+        function responsys() {
+            let h = html.value;
+            reportData = [
+                "⚙ Responsys",
+                "Variables: " + (h.match(/\$\{[^}]+\}/g) || []).length,
+                "IF: " + (h.match(/<#if/gi) || []).length,
+                "ELSE: " + (h.match(/<#else/gi) || []).length
+            ];
+            report.innerHTML = reportData.join("<br>");
+        }
+
+        function esc(t) {
+            return (t || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function compareVersion() {
+
+            compareArea.classList.remove("hidden");
+
+            let a = html.value.split("\n");
+            let b = htmlB.value.split("\n");
+
+            let old = "";
+            let neu = "";
+            let count = 0;
+
+            for (let i = 0; i < Math.max(a.length, b.length); i++) {
+
+                if (a[i] !== b[i]) {
+                    count++;
+                    old += "<span class='line remove'>" + (i + 1) + " - " + esc(a[i]) + "</span>";
+                    neu += "<span class='line add'>" + (i + 1) + " + " + esc(b[i]) + "</span>";
+                }
+                else {
+                    old += "<span class='line'>" + (i + 1) + " | " + esc(a[i]) + "</span>";
+                    neu += "<span class='line'>" + (i + 1) + " | " + esc(b[i]) + "</span>";
+                }
+
+            }
+
+            oldDiff.innerHTML = '<div class="diff-header">OLD HTML</div>' + old;
+            newDiff.innerHTML = '<div class="diff-header">NEW HTML</div>' + neu;
+
+            report.innerHTML =
+                "🔀 Changed lines: " + count;
+
+            syncScroll();
+
+        }
+
+        function closeCompare() {
+            compareArea.classList.add("hidden");
+        }
+
+        function syncScroll() {
+
+            oldDiff.onscroll = () => {
+                if (lock) return;
+                lock = true;
+                newDiff.scrollTop = oldDiff.scrollTop;
+                setTimeout(() => lock = false, 20);
+            };
+
+            newDiff.onscroll = () => {
+                if (lock) return;
+                lock = true;
+                oldDiff.scrollTop = newDiff.scrollTop;
+                setTimeout(() => lock = false, 20);
+            };
+
+        }
+
+        function exportReport() {
+            let blob = new Blob([reportData.join("\n")], { type: "text/plain" });
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "email-report.txt";
+            a.click();
+        }
+
+        file.onchange = e => {
+            let r = new FileReader();
+            r.onload = x => {
+                html.value = x.target.result;
+                preview();
+            };
+            r.readAsText(e.target.files[0]);
+        };
+
+    </script>
+
+</body>
+
+</html>
